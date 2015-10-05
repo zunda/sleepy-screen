@@ -28,6 +28,7 @@ time_t check_time;
 void lock(void)
 {
 	int r;
+	fputs("L", stderr);
 	alarm(0);
 	r = system(LOCK_COMMAND);
 	if (r) exit(r);
@@ -36,6 +37,7 @@ void lock(void)
 
 void unlock(void)
 {
+	fputs(".", stderr);
 	time(&last_active_time);
 	if (locked)
 		{
@@ -56,6 +58,7 @@ update_alarm(void)
 void
 check_activity(int signum)
 {
+	fputs("C", stderr);
 	time_t now;
 	time(&now);
 	if (last_active_time + wait_sec <= now)
