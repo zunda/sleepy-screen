@@ -1,0 +1,10 @@
+*.swp
+*.o
+*.deps/
+src/sleepy-screen
+Makefile
+Makefile.in
+autom4te.cache
+config.*
+configure
+stamp-h1
