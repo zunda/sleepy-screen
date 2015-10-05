@@ -8,6 +8,62 @@
 #include <stdlib.h>
 #include <X11/extensions/XInput2.h>
 
+#include <time.h>
+#include <signal.h>
+
+void lock(void);
+void unlock(void);
+
+void check_activity(int signum);
+void update_alarm(void);
+
+int locked;
+time_t wait_sec;
+time_t last_active_time;
+time_t check_time;
+
+#define LOCK_COMMAND \
+"dbus-send --print-reply --dest=org.freedesktop.ScreenSaver /ScreenSaver org.freedesktop.ScreenSaver.Lock"
+
+void lock(void)
+{
+	int r;
+	alarm(0);
+	r = system(LOCK_COMMAND);
+	if (r) exit(r);
+	locked = 1;
+}
+
+void unlock(void)
+{
+	time(&last_active_time);
+	if (locked)
+		{
+			locked = 0;
+			update_alarm();
+		}
+}
+
+void
+update_alarm(void)
+{
+	time_t now;
+	check_time = last_active_time + wait_sec;
+	time(&now);
+	alarm(check_time - now);
+}
+
+void
+check_activity(int signum)
+{
+	time_t now;
+	time(&now);
+	if (last_active_time + wait_sec <= now)
+		lock();
+	else
+		update_alarm();
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -17,6 +73,8 @@ main(int argc, char *argv[])
 	Window win;
 	XEvent ev;
 	XGenericEventCookie *cookie;
+
+	wait_sec = 10;
 
 	display = XOpenDisplay(NULL);
 	if (!display)
@@ -47,12 +105,16 @@ main(int argc, char *argv[])
 	free(mask[0].mask);
 	free(mask[1].mask);
 
+	locked = 1;
+	signal(SIGALRM, check_activity);
+	unlock();
+
 	while(1)
 		{
-			fputs(".", stderr);
 			cookie = (XGenericEventCookie*) &ev.xcookie;
 			XNextEvent(display, (XEvent*) &ev);
 			XFreeEventData(display, cookie);
+			unlock();
 		}
 
 	XDestroyWindow(display, win);
