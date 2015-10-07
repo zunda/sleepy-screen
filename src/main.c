@@ -12,7 +12,7 @@
 #include <signal.h>
 
 void lock(void);
-callback_for_event_t unlock(void *arg);
+int unlock(void *arg);
 
 void check_activity(int signum);
 void update_alarm(void);
@@ -35,7 +35,7 @@ void lock(void)
 	locked = 1;
 }
 
-callback_for_event_t
+int
 unlock(void *arg)
 {
 	fputs(".", stderr);
@@ -45,6 +45,7 @@ unlock(void *arg)
 			locked = 0;
 			update_alarm();
 		}
+	return 0;
 }
 
 void

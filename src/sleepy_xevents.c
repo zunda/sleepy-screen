@@ -23,6 +23,7 @@ sigint_handler(int signum)
 sleepy_xevents_result_t
 sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg)
 {
+	int r;
 	Display *display;
 	XIEventMask mask[2];
 	XIEventMask *m;
@@ -63,7 +64,8 @@ sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg)
 			cookie = (XGenericEventCookie*) &ev.xcookie;
 			XNextEvent(display, (XEvent*) &ev);
 			XFreeEventData(display, cookie);
-			callback(callback_arg);
+			r = callback(callback_arg);
+			if (r != 0) continuing = 0;
 		}
 
 	XDestroyWindow(display, win);
