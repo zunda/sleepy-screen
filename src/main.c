@@ -4,7 +4,7 @@
 #include <config.h>
 #endif
 
-#include "sleepy_xevents.h"
+#include "sleepy-xevents.h"
 
 #include <stdio.h>
 #include <stdlib.h>

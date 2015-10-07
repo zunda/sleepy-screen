@@ -1,4 +1,4 @@
-/* sleepy_xevents.h - detects x11 events through xinput2 */
+/* sleepy-xevents.h - detects x11 events through xinput2 */
 /* vim: set ts=2 sw=2 noet: */
 
 #ifndef SLEEPY_XEVENTS_H
