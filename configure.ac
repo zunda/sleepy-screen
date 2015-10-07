@@ -17,7 +17,9 @@ if test "x$GDBUS_CODEGEN" = "x"; then
 fi
 
 # Checks for libraries.
-PKG_CHECK_MODULES(XINPUT, x11 xext [xi >= 1.2.99.2] [inputproto >= 1.9.99.15], XI2)
+PKG_CHECK_MODULES(XINPUT, x11 xext)
+PKG_CHECK_MODULES(XI2, [xi >= 1.2.99.2] [inputproto >= 1.9.99.15])
+PKG_CHECK_MODULES(GIO, gio-2.0)
 
 # Checks for header files.
 AC_PATH_X
