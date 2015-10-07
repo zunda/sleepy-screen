@@ -11,6 +11,10 @@ AM_INIT_AUTOMAKE()
 
 # Checks for programs.
 AC_PROG_CC
+AC_PATH_PROG(GDBUS_CODEGEN, gdbus-codegen)
+if test "x$GDBUS_CODEGEN" = "x"; then
+	AC_MSG_ERROR([gdbus-cdoegen is required])
+fi
 
 # Checks for libraries.
 PKG_CHECK_MODULES(XINPUT, x11 xext [xi >= 1.2.99.2] [inputproto >= 1.9.99.15], XI2)
