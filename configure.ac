@@ -22,6 +22,7 @@ AC_CHECK_HEADERS([stdlib.h])
 # Checks for typedefs, structures, and compiler characteristics.
 
 # Checks for library functions.
+AC_CHECK_FUNCS([alarm])
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])
