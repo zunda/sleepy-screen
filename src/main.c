@@ -4,15 +4,15 @@
 #include <config.h>
 #endif
 
+#include "sleepy_xevents.h"
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <X11/extensions/XInput2.h>
-
 #include <time.h>
 #include <signal.h>
 
 void lock(void);
-void unlock(void);
+callback_for_event_t unlock(void *arg);
 
 void check_activity(int signum);
 void update_alarm(void);
@@ -35,7 +35,8 @@ void lock(void)
 	locked = 1;
 }
 
-void unlock(void)
+callback_for_event_t
+unlock(void *arg)
 {
 	fputs(".", stderr);
 	time(&last_active_time);
@@ -70,59 +71,20 @@ check_activity(int signum)
 int
 main(int argc, char *argv[])
 {
-	Display *display;
-	XIEventMask mask[2];
-	XIEventMask *m;
-	Window win;
-	XEvent ev;
-	XGenericEventCookie *cookie;
-
+	sleepy_xevents_result_t r;
 	wait_sec = 10;
-
-	display = XOpenDisplay(NULL);
-	if (!display)
-		{
-			fputs("Unable to connect to X server.\n", stderr);
-			return EXIT_FAILURE;
-		}
-
-	win = DefaultRootWindow(display);
-
-	m = &mask[0];
-	m->deviceid = XIAllDevices;
-	m->mask_len = XIMaskLen(XI_LASTEVENT);
-	m->mask = calloc(m->mask_len, sizeof(char));
-	XISetMask(m->mask, XI_KeyPress);
-	XISetMask(m->mask, XI_KeyRelease);
-
-	m = &mask[1];
-	m->deviceid = XIAllMasterDevices;
-	m->mask_len = XIMaskLen(XI_LASTEVENT);
-	m->mask = calloc(m->mask_len, sizeof(char));
-	XISetMask(m->mask, XI_RawKeyPress);
-	XISetMask(m->mask, XI_RawKeyRelease);
-
-	XISelectEvents(display, win, &mask[0], 2);
-	XSync(display, False);
-
-	free(mask[0].mask);
-	free(mask[1].mask);
 
 	locked = 1;
 	signal(SIGALRM, check_activity);
-	unlock();
+	unlock(NULL);
 
-	while(1)
+	r = sleepy_xevents_loop(unlock, NULL);
+	switch(r)
 		{
-			cookie = (XGenericEventCookie*) &ev.xcookie;
-			XNextEvent(display, (XEvent*) &ev);
-			XFreeEventData(display, cookie);
-			unlock();
+			case error_xopendisplay:
+				fputs("Could not connect to X server.\n", stderr);
+				return EXIT_FAILURE;
 		}
-
-	XDestroyWindow(display, win);
-	XSync(display, False);
-	XCloseDisplay(display);
 
 	return EXIT_SUCCESS;
 }
