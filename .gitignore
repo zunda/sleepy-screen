@@ -2,7 +2,7 @@
 *.o
 *.deps/
 src/sleepy-screen
-src/sleepy-screen-dbus.[ch]
+src/sleepy-dbus-gen.[ch]
 Makefile
 Makefile.in
 autom4te.cache
