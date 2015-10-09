@@ -5,6 +5,7 @@
 #endif
 
 #include "sleepy-xevents.h"
+#include "sleepy-dbus.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,11 +28,11 @@ time_t check_time;
 
 void lock(void)
 {
-	int r;
+	sleepy_dbus_result_t r;
 	fputs("L", stderr);
 	alarm(0);
-	r = system(LOCK_COMMAND);
-	if (r) exit(r);
+	r = sleepy_dbus_lock_screen();
+	if (r != dbus_ok) exit(EXIT_FAILURE);
 	locked = 1;
 }
 
@@ -82,7 +83,7 @@ main(int argc, char *argv[])
 	r = sleepy_xevents_loop(unlock, NULL);
 	switch(r)
 		{
-			case error_xopendisplay:
+			case xevents_error_xopendisplay:
 				fputs("Could not connect to X server.\n", stderr);
 				return EXIT_FAILURE;
 		}

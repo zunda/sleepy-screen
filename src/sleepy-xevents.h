@@ -6,8 +6,8 @@
 
 /* return value */
 typedef enum {
-	ok = 0,	/* got SIGINT */
-	error_xopendisplay,
+	xevents_ok = 0,	/* got SIGINT */
+	xevents_error_xopendisplay,
 } sleepy_xevents_result_t;
 	
 /* callback when an event is detected - should return 0 to continue the loop */

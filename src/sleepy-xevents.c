@@ -32,7 +32,7 @@ sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg)
 	XGenericEventCookie *cookie;
 
 	display = XOpenDisplay(NULL);
-	if (!display) return error_xopendisplay;
+	if (!display) return xevents_error_xopendisplay;
 
 	win = DefaultRootWindow(display);
 
@@ -72,5 +72,5 @@ sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg)
 	XSync(display, False);
 	XCloseDisplay(display);
 
-	return ok;
+	return xevents_ok;
 }
