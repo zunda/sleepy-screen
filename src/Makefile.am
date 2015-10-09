@@ -4,8 +4,8 @@ sleepy_screen_CFLAGS = $(XINPUT_CFLAGS) $(XI2_CFLAGS) $(GIO_CFLAGS)
 sleepy_screen_LDADD = $(XINPUT_LIBS) $(XI2_LIBS) $(GIO_LIBS)
 sleepy_screen_SOURCES = main.c \
 	sleepy-xevents.c sleepy-xevents.h \
-	sleepy-dbus.c sleepy-dbus.h \
-	sleepy-dbus-gen.c sleepy-dbus-gen.h
+	sleepy-dbus-gen.c sleepy-dbus-gen.h \
+	sleepy-dbus.c sleepy-dbus.h
 
 EXTRA_DIST = org.freedesktop.ScreenSaver.xml
 CLEANFILES = sleepy-dbus-gen.c sleepy-dbus-gen.h
