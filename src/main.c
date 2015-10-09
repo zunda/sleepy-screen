@@ -23,9 +23,6 @@ time_t wait_sec;
 time_t last_active_time;
 time_t check_time;
 
-#define LOCK_COMMAND \
-"dbus-send --print-reply --dest=org.freedesktop.ScreenSaver /ScreenSaver org.freedesktop.ScreenSaver.Lock"
-
 void lock(void)
 {
 	sleepy_dbus_result_t r;
