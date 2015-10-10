@@ -4,12 +4,10 @@
 #ifndef SLEEPY_DBUS_H
 #define SLEEPY_DBUS_H
 
-/* return value */
-typedef enum {
-	dbus_ok = 0,
-	dbus_error,
-} sleepy_dbus_result_t;
-	
-sleepy_dbus_result_t sleepy_dbus_lock_screen(void);
+#include "sleepy-dbus-gen.h"
+
+OrgFreedesktopScreenSaver* sleepy_dbus_init_and_get_proxy(GError **error);
+void sleepy_dbus_finish(OrgFreedesktopScreenSaver *proxy);
+void sleepy_dbus_lock_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
 
 #endif	/* SLEEPY_DBUS_H */

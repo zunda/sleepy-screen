@@ -23,13 +23,21 @@ time_t wait_sec;
 time_t last_active_time;
 time_t check_time;
 
+OrgFreedesktopScreenSaver *proxy;
+
 void lock(void)
 {
-	sleepy_dbus_result_t r;
+	GError *error;
 	fputs("L", stderr);
 	alarm(0);
-	r = sleepy_dbus_lock_screen();
-	if (r != dbus_ok) exit(EXIT_FAILURE);
+	error = NULL;
+	sleepy_dbus_lock_screen(proxy, &error);
+	if (error)
+		{
+			fprintf(stderr, "%s\n", error->message);
+			sleepy_dbus_finish(proxy);
+			exit(EXIT_FAILURE);
+		}
 	locked = 1;
 }
 
@@ -70,6 +78,7 @@ check_activity(int signum)
 int
 main(int argc, char *argv[])
 {
+	GError *error;
 	sleepy_xevents_result_t r;
 	wait_sec = 10;
 
@@ -77,13 +86,22 @@ main(int argc, char *argv[])
 	signal(SIGALRM, check_activity);
 	unlock(NULL);
 
+	proxy = sleepy_dbus_init_and_get_proxy(&error);
+  if (error)
+    {
+			fprintf(stderr, "%s\n", error->message);
+			return EXIT_FAILURE;
+    }
+
 	r = sleepy_xevents_loop(unlock, NULL);
 	switch(r)
 		{
 			case xevents_error_xopendisplay:
 				fputs("Could not connect to X server.\n", stderr);
+				sleepy_dbus_finish(proxy);
 				return EXIT_FAILURE;
 		}
 
+	sleepy_dbus_finish(proxy);
 	return EXIT_SUCCESS;
 }
