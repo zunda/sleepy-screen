@@ -29,7 +29,7 @@ void lock(void)
 {
 	GError *error;
 	fputs("L", stderr);
-	alarm(0);
+	alarm(wait_sec);
 	error = NULL;
 	sleepy_dbus_lock_screen(proxy, &error);
 	if (error)
@@ -66,7 +66,11 @@ update_alarm(void)
 void
 check_activity(int signum)
 {
-	fputs("C", stderr);
+	gboolean r;
+	GError *error;
+	error = NULL;
+	org_freedesktop_screen_saver_call_get_active_sync(proxy, &r, NULL, &error);
+	fprintf(stderr, "C:%d", r);
 	time_t now;
 	time(&now);
 	if (last_active_time + wait_sec <= now)

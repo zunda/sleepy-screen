@@ -36,5 +36,6 @@ sleepy_dbus_finish(OrgFreedesktopScreenSaver *proxy)
 void
 sleepy_dbus_lock_screen(OrgFreedesktopScreenSaver *proxy, GError **error)
 {
+	org_freedesktop_screen_saver_call_set_active_sync(proxy, 1, NULL, NULL, error);
 	org_freedesktop_screen_saver_call_lock_sync(proxy, NULL, error);
 }
