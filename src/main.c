@@ -13,23 +13,19 @@
 #include <signal.h>
 
 void lock(void);
-int unlock(void *arg);
-
+int mark(void *arg);
 void check_activity(int signum);
-void update_alarm(void);
 
-int locked;
-time_t wait_sec;
+long wait_sec;
 time_t last_active_time;
-time_t check_time;
 
 OrgFreedesktopScreenSaver *proxy;
 
-void lock(void)
+void
+lock(void)
 {
 	GError *error;
 	fputs("L", stderr);
-	alarm(wait_sec);
 	error = NULL;
 	sleepy_dbus_lock_screen(proxy, &error);
 	if (error)
@@ -38,45 +34,41 @@ void lock(void)
 			sleepy_dbus_finish(proxy);
 			exit(EXIT_FAILURE);
 		}
-	locked = 1;
 }
 
 int
-unlock(void *arg)
+mark(void *arg)
 {
 	fputs(".", stderr);
 	time(&last_active_time);
-	if (locked)
-		{
-			locked = 0;
-			update_alarm();
-		}
 	return 0;
 }
 
 void
-update_alarm(void)
+check(int signum)
 {
 	time_t now;
-	check_time = last_active_time + wait_sec;
-	time(&now);
-	alarm(check_time - now);
-}
-
-void
-check_activity(int signum)
-{
-	gboolean r;
-	GError *error;
-	error = NULL;
-	org_freedesktop_screen_saver_call_get_active_sync(proxy, &r, NULL, &error);
-	fprintf(stderr, "C:%d", r);
-	time_t now;
+	fputs("C", stderr);
 	time(&now);
 	if (last_active_time + wait_sec <= now)
-		lock();
+		{
+			int saver_active;
+			GError *error;
+			error = NULL;
+			saver_active = sleepy_dbus_saver_active(proxy, &error);
+			if (error)
+				{
+					fprintf(stderr, "%s\n", error->message);
+					sleepy_dbus_finish(proxy);
+					exit(EXIT_FAILURE);
+				}
+			if (!saver_active) lock();
+			alarm(wait_sec);
+		}
 	else
-		update_alarm();
+		{
+			alarm(last_active_time + wait_sec - now);
+		}
 }
 
 int
@@ -86,10 +78,6 @@ main(int argc, char *argv[])
 	sleepy_xevents_result_t r;
 	wait_sec = 10;
 
-	locked = 1;
-	signal(SIGALRM, check_activity);
-	unlock(NULL);
-
 	proxy = sleepy_dbus_init_and_get_proxy(&error);
   if (error)
     {
@@ -97,7 +85,9 @@ main(int argc, char *argv[])
 			return EXIT_FAILURE;
     }
 
-	r = sleepy_xevents_loop(unlock, NULL);
+	signal(SIGALRM, check);
+	alarm(wait_sec);
+	r = sleepy_xevents_loop(mark, NULL);
 	switch(r)
 		{
 			case xevents_error_xopendisplay:
