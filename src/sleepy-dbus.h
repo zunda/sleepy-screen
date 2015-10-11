@@ -1,5 +1,15 @@
 /* sleepy-dbus.h - talks with the freedesktop screen saver */
 /* vim: set ts=2 sw=2 noet: */
+/*
+
+Copyright (C) 2015 zunda <zundan@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+*/
 
 #ifndef SLEEPY_DBUS_H
 #define SLEEPY_DBUS_H

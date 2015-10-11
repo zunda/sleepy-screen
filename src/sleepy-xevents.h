@@ -1,5 +1,15 @@
 /* sleepy-xevents.h - detects x11 events through xinput2 */
 /* vim: set ts=2 sw=2 noet: */
+/*
+
+Copyright (C) 2015 zunda <zundan@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+*/
 
 #ifndef SLEEPY_XEVENTS_H
 #define SLEEPY_XEVENTS_H
