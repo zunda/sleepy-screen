@@ -98,6 +98,7 @@ usage(FILE* stream)
 
 	if (verbosity > 0)
 	fputs("\n"
+		PACKAGE_STRING "\n"
 		"Copyright (C) 2015 zunda <zundan@gmail.com>\n\n"
 		"This program is free software: you can redistribute it and/or modify\n"
 		"it under the terms of the GNU General Public License as published by\n"
