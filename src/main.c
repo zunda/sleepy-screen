@@ -11,12 +11,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <signal.h>
+#include <unistd.h>
 
 void lock(void);
 int mark(void);
 void check_activity(int signum);
+void usage(FILE* stream);
 
-long wait_sec;
+int verbosity = 0;
+long wait_sec = 1800;
 time_t last_active_time;
 
 OrgFreedesktopScreenSaver *proxy;
@@ -25,7 +28,7 @@ void
 lock(void)
 {
 	GError *error;
-	fputs("L", stderr);
+	if (verbosity > 0) fputs("L", stderr);
 	error = NULL;
 	sleepy_dbus_lock_screen(proxy, &error);
 	if (error)
@@ -39,7 +42,7 @@ lock(void)
 int
 mark(void)
 {
-	fputs(".", stderr);
+	if (verbosity > 0) fputs(".", stderr);
 	time(&last_active_time);
 	return 0;
 }
@@ -48,7 +51,7 @@ void
 check(int signum)
 {
 	time_t now;
-	fputs("C", stderr);
+	if (verbosity > 0) fputs("C", stderr);
 	time(&now);
 	if (last_active_time + wait_sec <= now)
 		{
@@ -71,12 +74,39 @@ check(int signum)
 		}
 }
 
+void
+usage(FILE* stream)
+{
+	fputs("dummy usage\n", stream);
+}
+
 int
 main(int argc, char *argv[])
 {
+	int opt;
+
 	GError *error;
 	sleepy_xevents_result_t r;
 	wait_sec = 10;
+
+	while((opt = getopt(argc, argv, "hvw:")) != -1)
+		{
+			switch (opt)
+				{
+				case 'h':
+					usage(stdout);
+					return EXIT_SUCCESS;
+				case 'v':
+					verbosity += 1;
+					break;
+				case 'w':
+					wait_sec = atol(optarg);
+					break;
+				default:
+					usage(stderr);
+					return EXIT_FAILURE;
+				}
+		}
 
 	proxy = sleepy_dbus_init_and_get_proxy(&error);
   if (error)
