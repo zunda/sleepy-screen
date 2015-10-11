@@ -13,7 +13,7 @@
 #include <signal.h>
 
 void lock(void);
-int mark(void *arg);
+int mark(void);
 void check_activity(int signum);
 
 long wait_sec;
@@ -37,7 +37,7 @@ lock(void)
 }
 
 int
-mark(void *arg)
+mark(void)
 {
 	fputs(".", stderr);
 	time(&last_active_time);
@@ -87,7 +87,7 @@ main(int argc, char *argv[])
 
 	signal(SIGALRM, check);
 	alarm(wait_sec);
-	r = sleepy_xevents_loop(mark, NULL);
+	r = sleepy_xevents_loop(mark);
 	switch(r)
 		{
 			case xevents_error_xopendisplay:

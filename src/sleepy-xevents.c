@@ -21,7 +21,7 @@ sigint_handler(int signum)
 }
 
 sleepy_xevents_result_t
-sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg)
+sleepy_xevents_loop(callback_for_event_t callback)
 {
 	int r;
 	Display *display;
@@ -64,7 +64,7 @@ sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg)
 			cookie = (XGenericEventCookie*) &ev.xcookie;
 			XNextEvent(display, (XEvent*) &ev);
 			XFreeEventData(display, cookie);
-			r = callback(callback_arg);
+			r = callback();
 			if (r != 0) continuing = 0;
 		}
 

@@ -11,10 +11,10 @@ typedef enum {
 } sleepy_xevents_result_t;
 	
 /* callback when an event is detected - should return 0 to continue the loop */
-typedef int (*callback_for_event_t)(void *);
+typedef int (*callback_for_event_t)(void);
 
 /* blocks until an event is detected, calls callback, and continue */
 /* ends with SIGINT */
-sleepy_xevents_result_t sleepy_xevents_loop(callback_for_event_t callback, void *callback_arg);
+sleepy_xevents_result_t sleepy_xevents_loop(callback_for_event_t callback);
 
 #endif	/* SLEEPY_XEVENTS_H */
