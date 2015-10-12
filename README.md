@@ -22,6 +22,13 @@ $ make
 # make install
 ```
 
+Packages you may need to install to build this program:
+- build-essential
+- autoconf
+- libglib2.0-dev
+- libxext-dev
+- libxi-dev
+
 License
 -------
 Copyright (C) 2015 zunda <zundan@gmail.com>
