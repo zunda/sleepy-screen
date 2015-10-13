@@ -6,8 +6,8 @@ sleepy_screen_SOURCES = main.c \
 	sleepy-xevents.c sleepy-xevents.h \
 	sleepy-dbus.c sleepy-dbus.h
 nodist_sleepy_screen_SOURCES = sleepy-dbus-gen.c sleepy-dbus-gen.h
-sleepy-screen.$(OBJEXT): sleepy-dbus-gen.c sleepy-dbus-gen.h
 
+BUILT_SOURCES = sleepy-dbus-gen.c sleepy-dbus-gen.h
 EXTRA_DIST = org.freedesktop.ScreenSaver.xml
 CLEANFILES = sleepy-dbus-gen.c sleepy-dbus-gen.h
 sleepy-dbus-gen.c sleepy-dbus-gen.h: org.freedesktop.ScreenSaver.xml
