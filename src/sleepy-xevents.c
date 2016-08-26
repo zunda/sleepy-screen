@@ -52,6 +52,8 @@ sleepy_xevents_loop(callback_for_event_t callback)
 	m->mask = calloc(m->mask_len, sizeof(char));
 	XISetMask(m->mask, XI_KeyPress);
 	XISetMask(m->mask, XI_KeyRelease);
+	XISetMask(m->mask, XI_ButtonPress);
+	XISetMask(m->mask, XI_ButtonRelease);
 
 	m = &mask[1];
 	m->deviceid = XIAllMasterDevices;
