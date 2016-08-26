@@ -155,11 +155,11 @@ main(int argc, char *argv[])
 		}
 
 	proxy = sleepy_dbus_init_and_get_proxy(&error);
-  if (error)
-    {
+	if (error)
+		{
 			fprintf(stderr, "%s\n", error->message);
 			return EXIT_FAILURE;
-    }
+		}
 
 	signal(SIGALRM, check);
 	alarm(wait_sec);
