@@ -35,8 +35,7 @@ sleepy_xevents_loop(callback_for_event_t callback)
 {
 	int r;
 	Display *display;
-	XIEventMask mask[2];
-	XIEventMask *m;
+	XIEventMask m;
 	Window win;
 	XEvent ev;
 	XGenericEventCookie *cookie;
@@ -46,27 +45,18 @@ sleepy_xevents_loop(callback_for_event_t callback)
 
 	win = DefaultRootWindow(display);
 
-	m = &mask[0];
-	m->deviceid = XIAllDevices;
-	m->mask_len = XIMaskLen(XI_LASTEVENT);
-	m->mask = calloc(m->mask_len, sizeof(char));
-	XISetMask(m->mask, XI_KeyPress);
-	XISetMask(m->mask, XI_KeyRelease);
-	XISetMask(m->mask, XI_ButtonPress);
-	XISetMask(m->mask, XI_ButtonRelease);
+	m.deviceid = XIAllMasterDevices;
+	m.mask_len = XIMaskLen(XI_LASTEVENT);
+	m.mask = calloc(m.mask_len, sizeof(char));
+	XISetMask(m.mask, XI_RawKeyPress);
+	XISetMask(m.mask, XI_RawKeyRelease);
+	XISetMask(m.mask, XI_RawButtonPress);
+	XISetMask(m.mask, XI_RawButtonRelease);
 
-	m = &mask[1];
-	m->deviceid = XIAllMasterDevices;
-	m->mask_len = XIMaskLen(XI_LASTEVENT);
-	m->mask = calloc(m->mask_len, sizeof(char));
-	XISetMask(m->mask, XI_RawKeyPress);
-	XISetMask(m->mask, XI_RawKeyRelease);
-
-	XISelectEvents(display, win, &mask[0], 2);
+	XISelectEvents(display, win, &m, 1);
 	XSync(display, False);
 
-	free(mask[0].mask);
-	free(mask[1].mask);
+	free(m.mask);
 
 	continuing = 1;
 	signal(SIGINT, sigint_handler);
