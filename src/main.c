@@ -24,30 +24,45 @@ the Free Software Foundation, either version 3 of the License, or
 #include <signal.h>
 #include <unistd.h>
 
+void call_sleepy_dbus(void (*  func)(OrgFreedesktopScreenSaver *, GError **), char const* logstring);
 void lock(void);
+void blank(void);
 int mark(void);
 void check_activity(int signum);
 void usage(FILE* stream);
 
 int verbosity = 0;
 long wait_sec = 1800;
+long blank_sec = 60;
 time_t last_active_time;
 
 OrgFreedesktopScreenSaver *proxy;
 
 void
-lock(void)
+call_sleepy_dbus(void ( *func)(OrgFreedesktopScreenSaver *, GError **), char const* logstring)
 {
 	GError *error;
-	if (verbosity > 0) fputs("L", stderr);
+	if (verbosity > 0) fputs(logstring, stderr);
 	error = NULL;
-	sleepy_dbus_lock_screen(proxy, &error);
+	func(proxy, &error);
 	if (error)
 		{
 			fprintf(stderr, "%s\n", error->message);
 			sleepy_dbus_finish(proxy);
 			exit(EXIT_FAILURE);
 		}
+}
+
+void
+lock(void)
+{
+	call_sleepy_dbus(sleepy_dbus_lock_screen, "L");
+}
+
+void
+blank(void)
+{
+	call_sleepy_dbus(sleepy_dbus_blank_screen, "L");
 }
 
 int
@@ -64,20 +79,15 @@ check(int signum)
 	time_t now;
 	if (verbosity > 0) fputs("C", stderr);
 	time(&now);
-	if (last_active_time + wait_sec <= now)
+	if (last_active_time + wait_sec + blank_sec <= now)
 		{
-			int saver_active;
-			GError *error;
-			error = NULL;
-			saver_active = sleepy_dbus_saver_active(proxy, &error);
-			if (error)
-				{
-					fprintf(stderr, "%s\n", error->message);
-					sleepy_dbus_finish(proxy);
-					exit(EXIT_FAILURE);
-				}
-			if (!saver_active) lock();
-			alarm(wait_sec);
+			lock();
+			alarm(blank_sec);
+		}
+	else if (last_active_time + wait_sec <= now)
+		{
+			blank();
+			alarm(blank_sec);
 		}
 	else
 		{
@@ -91,10 +101,11 @@ usage(FILE* stream)
 	fprintf(stream,
 		"sleepy-screen - A simple screen locker that monitors only keyboard\n\n"
 		"options:\n"
-		"\t-w wait : sepcify idle time before lock [%ld sec]\n"
+		"\t-w wait : sepcify idle time before blank [%ld sec]\n"
+		"\t-l wait : sepcify idle time after blank before lock [%ld sec]\n"
 		"\t-v      : increase verbosity\n"
 		"\t-h      : show help\n",
-	 wait_sec);
+	 wait_sec, blank_sec);
 
 	if (verbosity > 0)
 	fputs("\n"
@@ -121,7 +132,7 @@ main(int argc, char *argv[])
 	GError *error;
 	sleepy_xevents_result_t r;
 
-	while((opt = getopt(argc, argv, "hvw:")) != -1)
+	while((opt = getopt(argc, argv, "hvw:l:")) != -1)
 		{
 			switch (opt)
 				{
@@ -133,6 +144,9 @@ main(int argc, char *argv[])
 					break;
 				case 'w':
 					wait_sec = atol(optarg);
+					break;
+				case 'l':
+					blank_sec = atol(optarg);
 					break;
 				default:
 					usage(stderr);

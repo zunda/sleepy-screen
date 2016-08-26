@@ -19,6 +19,7 @@ the Free Software Foundation, either version 3 of the License, or
 OrgFreedesktopScreenSaver* sleepy_dbus_init_and_get_proxy(GError **error);
 void sleepy_dbus_finish(OrgFreedesktopScreenSaver *proxy);
 void sleepy_dbus_lock_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
+void sleepy_dbus_blank_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
 int sleepy_dbus_saver_active(OrgFreedesktopScreenSaver *proxy, GError **error);
 
 
