@@ -129,9 +129,6 @@ int
 main(int argc, char *argv[])
 {
 	int opt;
-
-	GError *error;
-
 	while((opt = getopt(argc, argv, "hvw:l:")) != -1)
 		{
 			switch (opt)
@@ -154,6 +151,7 @@ main(int argc, char *argv[])
 				}
 		}
 
+	GError *error;
 	proxy = sleepy_dbus_init_and_get_proxy(&error);
 	if (error)
 		{

@@ -33,18 +33,13 @@ sigint_handler(int signum)
 sleepy_xevents_result_t
 sleepy_xevents_loop(callback_for_event_t callback)
 {
-	int r;
 	Display *display;
-	XIEventMask m;
-	Window win;
-	XEvent ev;
-	XGenericEventCookie *cookie;
-
 	display = XOpenDisplay(NULL);
 	if (!display) return xevents_error_xopendisplay;
 
-	win = DefaultRootWindow(display);
+	Window win = DefaultRootWindow(display);
 
+	XIEventMask m;
 	m.deviceid = XIAllMasterDevices;
 	m.mask_len = XIMaskLen(XI_LASTEVENT);
 	m.mask = calloc(m.mask_len, sizeof(char));
@@ -61,13 +56,14 @@ sleepy_xevents_loop(callback_for_event_t callback)
 	continuing = 1;
 	signal(SIGINT, sigint_handler);
 
+	XEvent ev;
+	XGenericEventCookie *cookie;
 	while(continuing)
 		{
 			cookie = (XGenericEventCookie*) &ev.xcookie;
 			XNextEvent(display, (XEvent*) &ev);
 			XFreeEventData(display, cookie);
-			r = callback();
-			if (r != 0) continuing = 0;
+			if (callback() != 0) continuing = 0;
 		}
 
 	XDestroyWindow(display, win);
