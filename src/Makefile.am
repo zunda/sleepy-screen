@@ -11,4 +11,4 @@ BUILT_SOURCES = sleepy-dbus-gen.c sleepy-dbus-gen.h
 EXTRA_DIST = org.freedesktop.ScreenSaver.xml
 CLEANFILES = sleepy-dbus-gen.c sleepy-dbus-gen.h
 sleepy-dbus-gen.c sleepy-dbus-gen.h: org.freedesktop.ScreenSaver.xml
-	$(GDBUS_CODEGEN) --generate-c-code $(basename $@) $<
+	$(GDBUS_CODEGEN) --generate-c-code $* $<
