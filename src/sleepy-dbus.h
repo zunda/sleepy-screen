@@ -22,5 +22,4 @@ void sleepy_dbus_lock_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
 void sleepy_dbus_blank_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
 int sleepy_dbus_saver_active(OrgFreedesktopScreenSaver *proxy, GError **error);
 
-
 #endif	/* SLEEPY_DBUS_H */
