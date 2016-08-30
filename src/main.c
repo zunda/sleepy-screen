@@ -23,6 +23,7 @@ the Free Software Foundation, either version 3 of the License, or
 #include <time.h>
 #include <signal.h>
 #include <unistd.h>
+#include <getopt.h>
 
 void call_sleepy_dbus(void (*  func)(OrgFreedesktopScreenSaver *, GError **), char const* logstring);
 void lock(void);
@@ -130,7 +131,6 @@ main(int argc, char *argv[])
 	int opt;
 
 	GError *error;
-	sleepy_xevents_result_t r;
 
 	while((opt = getopt(argc, argv, "hvw:l:")) != -1)
 		{
@@ -163,13 +163,11 @@ main(int argc, char *argv[])
 
 	signal(SIGALRM, check);
 	alarm(wait_sec);
-	r = sleepy_xevents_loop(mark);
-	switch(r)
+	if (sleepy_xevents_loop(mark) == xevents_error_xopendisplay)
 		{
-			case xevents_error_xopendisplay:
-				fputs("Could not connect to X server.\n", stderr);
-				sleepy_dbus_finish(proxy);
-				return EXIT_FAILURE;
+			fputs("Could not connect to X server.\n", stderr);
+			sleepy_dbus_finish(proxy);
+			return EXIT_FAILURE;
 		}
 
 	sleepy_dbus_finish(proxy);

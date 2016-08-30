@@ -1,4 +1,5 @@
 bin_PROGRAMS = sleepy-screen
+CPPFLAGS = -Wall -std=c11
 
 sleepy_screen_CFLAGS = $(XINPUT_CFLAGS) $(XI2_CFLAGS) $(GIO_CFLAGS)
 sleepy_screen_LDADD = $(XINPUT_LIBS) $(XI2_LIBS) $(GIO_LIBS)
