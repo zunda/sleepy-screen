@@ -11,8 +11,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-#ifndef SLEEPY_DBUS_H
-#define SLEEPY_DBUS_H
+#pragma once
 
 #include "sleepy-dbus-gen.h"
 
@@ -21,5 +20,3 @@ void sleepy_dbus_finish(OrgFreedesktopScreenSaver *proxy);
 void sleepy_dbus_lock_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
 void sleepy_dbus_blank_screen(OrgFreedesktopScreenSaver *proxy, GError **error);
 int sleepy_dbus_saver_active(OrgFreedesktopScreenSaver *proxy, GError **error);
-
-#endif	/* SLEEPY_DBUS_H */

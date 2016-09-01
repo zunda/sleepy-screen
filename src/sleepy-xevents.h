@@ -11,8 +11,7 @@ the Free Software Foundation, either version 3 of the License, or
 
 */
 
-#ifndef SLEEPY_XEVENTS_H
-#define SLEEPY_XEVENTS_H
+#pragma once
 
 /* return value */
 typedef enum {
@@ -26,5 +25,3 @@ typedef int (*callback_for_event_t)(void);
 /* blocks until an event is detected, calls callback, and continue */
 /* ends with SIGINT */
 sleepy_xevents_result_t sleepy_xevents_loop(callback_for_event_t callback);
-
-#endif	/* SLEEPY_XEVENTS_H */
