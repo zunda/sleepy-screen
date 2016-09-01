@@ -29,7 +29,6 @@ void call_sleepy_dbus(void (*  func)(OrgFreedesktopScreenSaver *, GError **), ch
 void lock(void);
 void blank(void);
 int mark(void);
-void check_activity(int signum);
 void usage(FILE* stream);
 
 int verbosity = 0;
