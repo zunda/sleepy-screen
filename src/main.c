@@ -62,7 +62,7 @@ lock(void)
 void
 blank(void)
 {
-	call_sleepy_dbus(sleepy_dbus_blank_screen, "L");
+	call_sleepy_dbus(sleepy_dbus_blank_screen, "B");
 }
 
 int
