@@ -25,9 +25,7 @@ the Free Software Foundation, either version 3 of the License, or
 #include <unistd.h>
 #include <getopt.h>
 
-void call_sleepy_dbus(void (*  func)(OrgFreedesktopScreenSaver *, GError **), char const* logstring);
-void lock(void);
-void blank(void);
+void call_sleepy_dbus(void (*  func)(OrgFreedesktopScreenSaver *, GError **));
 int mark(void);
 void usage(FILE* stream);
 
@@ -39,11 +37,9 @@ time_t last_active_time;
 OrgFreedesktopScreenSaver *proxy;
 
 void
-call_sleepy_dbus(void ( *func)(OrgFreedesktopScreenSaver *, GError **), char const* logstring)
+call_sleepy_dbus(void ( *func)(OrgFreedesktopScreenSaver *, GError **))
 {
 	GError *error = NULL;
-	if (verbosity > 0) fputs(logstring, stderr);
-	error = NULL;
 	func(proxy, &error);
 	if (error)
 		{
@@ -51,18 +47,6 @@ call_sleepy_dbus(void ( *func)(OrgFreedesktopScreenSaver *, GError **), char con
 			sleepy_dbus_finish(proxy);
 			exit(EXIT_FAILURE);
 		}
-}
-
-void
-lock(void)
-{
-	call_sleepy_dbus(sleepy_dbus_lock_screen, "L");
-}
-
-void
-blank(void)
-{
-	call_sleepy_dbus(sleepy_dbus_blank_screen, "B");
 }
 
 int
@@ -76,23 +60,30 @@ mark(void)
 void
 check(int signum)
 {
+	char *message;
+	unsigned int next;
 	time_t now;
-	if (verbosity > 0) fputs("C", stderr);
 	time(&now);
 	if (last_active_time + wait_sec + blank_sec <= now)
 		{
-			lock();
-			alarm(blank_sec);
+			message = "L";
+			call_sleepy_dbus(sleepy_dbus_lock_screen);
+			next = blank_sec;
 		}
 	else if (last_active_time + wait_sec <= now)
 		{
-			blank();
-			alarm(blank_sec);
+			message = "B";
+			call_sleepy_dbus(sleepy_dbus_blank_screen);
+			next = blank_sec;
 		}
 	else
 		{
-			alarm(last_active_time + wait_sec - now);
+			message = "C";
+			next = last_active_time + wait_sec - now;
 		}
+	if (verbosity > 0) fputs(message, stderr);
+	signal(SIGALRM, check);
+	alarm(next);
 }
 
 void
