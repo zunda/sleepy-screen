@@ -41,7 +41,7 @@ OrgFreedesktopScreenSaver *proxy;
 void
 call_sleepy_dbus(void ( *func)(OrgFreedesktopScreenSaver *, GError **), char const* logstring)
 {
-	GError *error;
+	GError *error = NULL;
 	if (verbosity > 0) fputs(logstring, stderr);
 	error = NULL;
 	func(proxy, &error);
@@ -150,7 +150,7 @@ main(int argc, char *argv[])
 				}
 		}
 
-	GError *error;
+	GError *error = NULL;
 	proxy = sleepy_dbus_init_and_get_proxy(&error);
 	if (error)
 		{
